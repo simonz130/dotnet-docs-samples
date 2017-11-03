@@ -91,7 +91,7 @@ namespace Metadata
                 var http = new HttpClient();
                 http.DefaultRequestHeaders.Add("Metadata-Flavor", new[] { "Google" });
                 return await http.GetStringAsync(
-                    "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip");
+                    "http://metadata/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip");
             }
             catch (System.Net.Http.HttpRequestException e)
             {

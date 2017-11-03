@@ -14,6 +14,8 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
+"The value of METADATA_EMULATOR_HOST is $env:METADATA_EMULATOR_HOST" | Write-Host
+
 dotnet restore
 dotnet build
 # Detect if I'm running in the Google Cloud.
