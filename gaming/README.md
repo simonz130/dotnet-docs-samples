@@ -25,7 +25,7 @@ A collection of samples that demonstrate how to call the
     Build started, please wait...
     Build completed.
 
-    Test run for /usr/local/google/home/gaming/bin/Debug/netcoreapp2.1/Gaming.dll(.NETCoreApp,Version=v2.2)
+    Test run for /usr/local/google/home/gaming/bin/Debug/netcoreapp2.2/Gaming.dll(.NETCoreApp,Version=v2.2)
     Microsoft (R) Test Execution Command Line Tool Version 15.7.0
     Copyright (c) Microsoft Corporation.  All rights reserved.
 
