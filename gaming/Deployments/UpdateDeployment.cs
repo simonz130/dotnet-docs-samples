@@ -17,9 +17,8 @@
 using System;
 using Google.Cloud.Gaming.V1Alpha;
 using Google.Protobuf.WellKnownTypes;
-using Newtonsoft.Json.Linq;
 
-namespace Gaming.Clusters
+namespace Gaming.Deployments
 {
     class UpdateDeploymentSamples
     {

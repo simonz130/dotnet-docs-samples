@@ -18,7 +18,7 @@ using System;
 using Google.Cloud.Gaming.V1Alpha;
 using Google.Protobuf.WellKnownTypes;
 
-namespace Gaming.Clusters
+namespace Gaming.Realms
 {
     class UpdateRealmsSamples
     {
@@ -29,7 +29,7 @@ namespace Gaming.Clusters
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
         /// <returns>Update a realm</returns>
-        public string UpdateRealms(
+        public string UpdateRealm(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
             string realmId = "YOUR-REALM-ID")

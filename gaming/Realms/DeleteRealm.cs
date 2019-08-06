@@ -17,7 +17,7 @@
 using System;
 using Google.Cloud.Gaming.V1Alpha;
 
-namespace Gaming.Clusters
+namespace Gaming.Realms
 {
     class DeleteRealmSamples
     {
@@ -27,7 +27,7 @@ namespace Gaming.Clusters
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Realm cluster name</returns>
+        /// <returns>Deleted Realm name</returns>
         public string DeleteRealm(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",

@@ -27,7 +27,7 @@ namespace Gaming.Realms
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Game server cluster name</returns>
+        /// <returns>Newly created realm name</returns>
         public string CreateRealm(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",

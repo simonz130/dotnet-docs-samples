@@ -19,7 +19,7 @@ using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.Realms
 {
-    class GetRealm
+    class GetRealmSamples
     {
         /// <summary>
         /// Gets a game server cluster
@@ -27,9 +27,8 @@ namespace Gaming.Realms
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <param name="clusterId">The id of the game server cluster</param>
-        /// <returns>Game server cluster name</returns>
-        public string GetGameServerCluster(
+        /// <returns>Gets a realm</returns>
+        public string GetRealm(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
             string realmId = "YOUR-REALM-ID")
