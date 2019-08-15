@@ -37,8 +37,8 @@ class ClusterTestsFixture : IDisposable
         RealmId = _realmId + TestUtil.RandomName();
         RegionId = _regionId;
 
-        string parent = $"projects/{_projectId}/locations/{_regionId}/realms/{_realmId}";
-        string clusterName = $"{parent}/gameServerClusters/{_clusterId}";
+        string parent = $"projects/{_projectId}/locations/{_regionId}/realms/{RealmId}";
+        string clusterName = $"{parent}/gameServerClusters/{ClusterId}";
 
         // Setup
         var createRealmUtils = new CreateRealmSamples();
@@ -106,13 +106,6 @@ public class DeleteClusterTests : IClassFixture<ClusterTestsFixture>
 public class ClusterTests : IClassFixture<ClusterTestsFixture>
 {
     private ClusterTestsFixture fixture;
-
-    private static string _projectId =
-        Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private const string _realmId = "realm-1";
-    private const string _clusterId = "123124";
-    private static string _parent = $"projects/{_projectId}/locations/us-central1-f/realms/{_realmId}";
-    private static string _clusterName = $"{_parent}/gameServerClusters/{_clusterId}";
 
     [Fact]
     public void TestCreateCluster()
