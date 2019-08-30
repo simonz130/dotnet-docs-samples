@@ -22,7 +22,7 @@ namespace Gaming.Deployments
     class DeploymentCommitSamples
     {
         /// <summary>
-        /// Commit a rollback for deployment
+        /// Commit a rollout for deployment
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>

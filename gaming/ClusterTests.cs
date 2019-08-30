@@ -12,10 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
 using Gaming.Clusters;
 using Gaming.Realms;
 using GoogleCloudSamples;
+using System;
 using Xunit;
 
 class ClusterTestsFixture : IDisposable
