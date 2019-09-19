@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax;
 using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.ScalingPolicies
@@ -37,17 +38,35 @@ namespace Gaming.ScalingPolicies
             string parent = $"projects/{projectId}/locations/global";
 
             // Call the API
-            var response = client.ListScalingPolicies(parent);
-
-            // Inspect the result
-            List<string> result = new List<string>();
-            foreach (var scalingPolicy in response)
+            try
             {
-                Console.WriteLine($"Scaling policy found: {scalingPolicy.Name}");
-                result.Add(scalingPolicy.Name);
-            }
+                var response = client.ListScalingPolicies(parent);
 
-            return result;
+                // Inspect the result
+                List<string> result = new List<string>();
+                bool hasMore = true;
+                Page<ScalingPolicy> currentPage;
+                while (hasMore)
+                {
+                    currentPage = response.ReadPage(pageSize: 10);
+
+                    // Read the result in a given page
+                    foreach (var realm in currentPage)
+                    {
+                        Console.WriteLine($"Scaling policy found: {realm.Name}");
+                        result.Add(realm.Name);
+                    }
+                    hasMore = currentPage != null; 
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ListScalingPolicies error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

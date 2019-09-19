@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax;
 using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.Realms
@@ -30,7 +31,7 @@ namespace Gaming.Realms
         /// <returns>List all realms for project and region</returns>
         public List<string> ListRealms(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f")
+            string regionId = "us-central1")
         {
             // Initialize the client
             var client = RealmsServiceClient.Create();
@@ -39,17 +40,35 @@ namespace Gaming.Realms
             string parent = $"projects/{projectId}/locations/{regionId}";
 
             // Call the API
-            var response = client.ListRealms(parent);
-
-            // Inspect the result
-            List<string> result = new List<string>();
-            foreach (var realm in response)
+            try
             {
-                Console.WriteLine($"Realm returned: {realm.Name}");
-                result.Add(realm.Name);
-            }
+                var response = client.ListRealms(parent);
 
-            return result;
+                // Inspect the result
+                List<string> result = new List<string>();
+                bool hasMore = true;
+                Page<Realm> currentPage;
+                while (hasMore)
+                {
+                    currentPage = response.ReadPage(pageSize: 10);
+
+                    // Read the result in a given page
+                    foreach (var realm in currentPage)
+                    {
+                        Console.WriteLine($"Realm returned: {realm.Name}");
+                        result.Add(realm.Name);
+                    }
+                    hasMore = currentPage != null; 
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateRealm error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

@@ -28,7 +28,6 @@ namespace Gaming.Clusters
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
         /// <param name="clusterId">The id of the game server cluster</param>
-        /// <returns>Game server cluster name</returns>
         public string DeleteGameServerCluster(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
@@ -43,11 +42,19 @@ namespace Gaming.Clusters
             string clusterName = $"{parent}/gameServerClusters/{clusterId}";
 
             // Call the API
-            var created = client.DeleteGameServerCluster(clusterName);
+            try
+            {
+                var deleted = client.DeleteGameServerCluster(clusterName);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster deleted: {created.Name}");
-            return created.Name;
+                // Inspect the result
+                return $"Game server cluster deleted: {deleted.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"DeleteGameServerCluster error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

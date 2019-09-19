@@ -28,10 +28,9 @@ namespace Gaming.Realms
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Update a realm</returns>
         public string UpdateRealm(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f",
+            string regionId = "us-central1",
             string realmId = "YOUR-REALM-ID")
         {
             // Initialize the client
@@ -50,11 +49,19 @@ namespace Gaming.Realms
             };
             
             // Call the API
-            var updated = client.UpdateRealm(realm, fieldMask);
+            try
+            {
+                var updated = client.UpdateRealm(realm, fieldMask);
 
-            // Inspect the result
-            Console.WriteLine($"Realm updated: {updated.Name}");
-            return updated.Name;
+                // Inspect the result
+                return $"Realm {realmName} updated. Operation Id: {updated.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateRealm error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

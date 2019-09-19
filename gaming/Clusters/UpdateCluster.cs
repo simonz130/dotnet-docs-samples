@@ -29,7 +29,6 @@ namespace Gaming.Clusters
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
         /// <param name="clusterId">The id of the game server cluster</param>
-        /// <returns>Game server cluster name</returns>
         public string UpdateGameServerCluster(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
@@ -51,11 +50,19 @@ namespace Gaming.Clusters
             fieldMask.Paths.Add("labels");
 
             // Call the API
-            var updated = client.UpdateGameServerCluster(cluster, fieldMask);
+            try
+            {
+                var updatedOperationId = client.UpdateGameServerCluster(cluster, fieldMask);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster updated: {updated.Name}");
-            return updated.Name;
+                // Inspect the result
+                return $"Game server cluster updated: {cluster.Name}. OperationId: {updatedOperationId}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UpdateGameServerCluster error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

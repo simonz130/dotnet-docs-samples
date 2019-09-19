@@ -17,26 +17,31 @@ using GoogleCloudSamples;
 using System;
 using Xunit;
 
-namespace Gaming
+namespace Gaming.Tests
 {
-    class ScalingPoliciesTestsFixture : IDisposable
+    public class ScalingPoliciesTestsFixture : IDisposable
     {
         private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private const string _regionId = "us-central1-f";
-        private const string _policyId = "123";
-        private const string _deploymentId = "123";
+        private const string _regionId = "us-central1";
+        private const string _policyId = "test-policy";
+        private const string _deploymentId = "test-deployment";
 
         public ScalingPoliciesTestsFixture()
         {
             ProjectId = _projectId;
+            Assert.False(string.IsNullOrEmpty(ProjectId));
+
             RegionId = _regionId;
             PolicyId = _policyId + TestUtil.RandomName();
             DeploymentId = _deploymentId + TestUtil.RandomName();
+            string parent = $"projects/{ProjectId}/locations/global";
+            PolicyName = $"{parent}/scalingPolicies/{PolicyId}";
+
 
             // Setup
             var createScalingPolicyUtils = new CreateScalingPolicySamples();
-            PolicyName = createScalingPolicyUtils.CreateScalingPolicy(ProjectId, PolicyId, DeploymentId);
-            Assert.NotNull(PolicyName);
+            var policyNameOperation = createScalingPolicyUtils.CreateScalingPolicy(ProjectId, PolicyId, DeploymentId);
+            Assert.Contains($"Scaling policy created for {PolicyName}.", policyNameOperation);
         }
 
         public string ProjectId { get; private set; }
@@ -50,12 +55,14 @@ namespace Gaming
         {
             try
             {
-                var deletedScalingPoilicyUtils = new DeleteScalingPolicySamples();
-                deletedScalingPoilicyUtils.DeleteScalingPolicy(ProjectId, PolicyId);
+                var deletedScalingPolicyUtils = new DeleteScalingPolicySamples();
+                Assert.Contains(
+                    $"Scaling policy deleted: {PolicyName}.",
+                    deletedScalingPolicyUtils.DeleteScalingPolicy(ProjectId, PolicyId));
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failed to delete Policy {PolicyId}");
+                Console.WriteLine($"Failed to delete policy {PolicyId}");
                 Console.WriteLine(e);
             }
         }
@@ -63,7 +70,12 @@ namespace Gaming
 
     public class ScalingPoliciesTests : IClassFixture<ScalingPoliciesTests>
     {
-        private ScalingPoliciesTestsFixture fixture;
+        private readonly ScalingPoliciesTestsFixture fixture;
+
+        public ScalingPoliciesTests(ScalingPoliciesTestsFixture fixture)
+        {
+            this.fixture = fixture;
+        }
 
         [Fact]
         public void TestCreateScalingPolicies()
@@ -76,7 +88,7 @@ namespace Gaming
         public void TestGetScalingPolicies()
         {
             var snippet = new GetScalingPolicySamples();
-            Assert.Equal(fixture.PolicyName,
+            Assert.Contains($"Scaling policy found: {fixture.PolicyName}",
                 snippet.GetScalingPolicy(
                     fixture.ProjectId,
                     fixture.PolicyId));
@@ -86,7 +98,8 @@ namespace Gaming
         public void TestUpdateScalingPolicies()
         {
             var snippet = new UpdateScalingPoliciesSamples();
-            Assert.Equal(fixture.PolicyName,
+            Assert.Contains(
+                $"Scaling policy updated: {fixture.PolicyName} updated.",
                 snippet.UpdateScalingPolicy(
                     fixture.ProjectId,
                     fixture.PolicyId));

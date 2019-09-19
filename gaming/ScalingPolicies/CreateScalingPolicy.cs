@@ -27,7 +27,6 @@ namespace Gaming.ScalingPolicies
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">Id of the scaling policy</param>
         /// <param name="deploymentId">Id of the deployment to scale</param>
-        /// <returns>Newly created scaling policy name</returns>
         public string CreateScalingPolicy(
             string projectId = "YOUR-PROJECT-ID",
             string policyId = "YOUR-SCALING-POLICY-ID",
@@ -62,11 +61,19 @@ namespace Gaming.ScalingPolicies
             };
 
             // Call the API
-            var created = client.CreateScalingPolicy(scalingPolicyRequest);
+            try
+            {
+                var created = client.CreateScalingPolicy(scalingPolicyRequest);
 
-            // Inspect the result
-            Console.WriteLine($"Scaling policy created: {created.Name}");
-            return created.Name;
+                // Inspect the result
+                return $"Scaling policy created for {policyName}. Operation Id {created.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateScalingPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

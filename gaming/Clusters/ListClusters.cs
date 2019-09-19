@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax;
 using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.Clusters
@@ -28,7 +29,6 @@ namespace Gaming.Clusters
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Game server cluster names</returns>
         public List<string> ListGameServerClusters(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
@@ -42,17 +42,35 @@ namespace Gaming.Clusters
             string parent = $"projects/{projectId}/locations/{regionId}/realms/{realmId}";
 
             // Call the API
-            var response = client.ListGameServerClusters(parent);
-
-            // Inspect the result
-            List<string> result = new List<string>();
-            foreach (var cluster in response)
+            try
             {
-                Console.WriteLine($"Game server cluster returned: {cluster.Name}");
-                result.Add(cluster.Name);
+                var response = client.ListGameServerClusters(parent);
+
+                // Inspect the result
+                List<string> result = new List<string>();
+                bool hasMore = true;
+                Page<GameServerCluster> currentPage;
+                while (hasMore)
+                {
+                    currentPage = response.ReadPage(pageSize: 10);
+
+                    // Read the result in a given page
+                    foreach (var cluster in currentPage)
+                    {
+                        Console.WriteLine($"Game server cluster returned: {cluster.Name}");
+                        result.Add(cluster.Name);
+                    }
+                    hasMore = currentPage != null; 
+                };
+
+                return result;
             }
-            
-            return result;
+            catch (Exception e)
+            {
+                Console.WriteLine($"ListGameServerClusters error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

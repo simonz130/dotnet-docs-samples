@@ -27,25 +27,30 @@ namespace Gaming.Realms
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Deleted Realm name</returns>
         public string DeleteRealm(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f",
+            string regionId = "us-central1",
             string realmId = "YOUR-REALM-ID")
         {
             // Initialize the client
             var client = RealmsServiceClient.Create();
 
             // Construct the request
-            string parent = $"projects/{projectId}/locations/{regionId}/realms/{realmId}";
+            string parent = $"projects/{projectId}/locations/{regionId}";
             string realmName = $"{parent}/realms/{realmId}";
 
             // Call the API
-            var deleted = client.DeleteRealm(realmName);
-
-            // Inspect the result
-            Console.WriteLine($"Realm deleted: {deleted.Name}");
-            return deleted.Name;
+            try
+            {
+                var deleted = client.DeleteRealm(realmName);
+                return $"Realm {realmName} deleted. Operation id: {deleted.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"DeleteRealm error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

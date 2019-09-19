@@ -27,7 +27,6 @@ namespace Gaming.ScalingPolicies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">Scaling policy to update</param>
-        /// <returns>Updated scaling policy name</returns>
         public string UpdateScalingPolicy(
             string projectId = "YOUR-PROJECT-ID",
             string policyId = "YOUR-SCALING-POLICY-ID")
@@ -48,11 +47,19 @@ namespace Gaming.ScalingPolicies
             };
 
             // Call the API
-            var updated = client.UpdateScalingPolicy(scalingPolicy, fieldMask);
+            try
+            {
+                var updated = client.UpdateScalingPolicy(scalingPolicy, fieldMask);
 
-            // Inspect the result
-            Console.WriteLine($"Scaling policy updated: {updated.Name}");
-            return updated.Name;
+                // Inspect the result
+                return $"Scaling policy updated: {policyName} updated. Operation Id: {updated.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UpdateScalingPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

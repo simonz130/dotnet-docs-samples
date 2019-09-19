@@ -16,65 +16,76 @@ using Gaming.Realms;
 using GoogleCloudSamples;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Gaming
+namespace Gaming.Tests
 {
-    class RealmsTestsFixture : IDisposable
+    public class RealmsTestsFixture : IDisposable
     {
         private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         private const string _realmId = "realm-test-1";
-        private const string _regionId = "us-central1-f";
-
+        private const string _regionId = "us-east1";
         public RealmsTestsFixture()
         {
             ProjectId = _projectId;
+            Assert.False(string.IsNullOrEmpty(ProjectId));
+
             RegionId = _regionId;
             RealmId = _realmId + TestUtil.RandomName();
+            RealmName = $"projects/{ProjectId}/locations/{RegionId}/realms/{RealmId}";
 
             // Setup (realm creation test)
             var createRealmUtils = new CreateRealmSamples();
-            string createdRealm = createRealmUtils.CreateRealm(_projectId, _regionId, RealmId);
-            Assert.Equal(RealmId, createdRealm);
+            string createRealmOutput = createRealmUtils.CreateRealm(ProjectId, RegionId, RealmId);
+            Assert.Contains($"Realm created for {RealmName}", createRealmOutput);
         }
 
-        public string ProjectId { get; set; }
-        public string RegionId { get; set; }
-        public string RealmId { get; set; }
+        public string ProjectId { get; private set; }
+        public string RegionId { get; private set; }
+        public string RealmId { get; private set; }
+        public string RealmName { get; private set; }
 
         public void Dispose()
         {
             try
             {
                 var deletedRealmUtils = new DeleteRealmSamples();
-                deletedRealmUtils.DeleteRealm(ProjectId, RegionId, RealmId);
+                Assert.Contains(
+                    $"Realm {RealmName} deleted.",
+                     deletedRealmUtils.DeleteRealm(ProjectId, RegionId, RealmId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine($"Failed to delete Realm {RealmId}");
-                Console.WriteLine(e);
             }
         }
     }
 
     public class RealmsTests : IClassFixture<RealmsTestsFixture>
     {
-        private RealmsTestsFixture fixture;
+        private readonly RealmsTestsFixture fixture;
+        
+        public RealmsTests(RealmsTestsFixture fixture)
+        {
+            this.fixture = fixture;
+        }
 
         [Fact]
         public void TestCreateRealm()
         {
             // Create API is implicitly used in test fixture setup. We do light check here
             // for the purposes of visibility in test results reporting.
-            Assert.NotNull(fixture.RealmId);
+            Assert.NotNull(fixture.RealmName);
         }
 
         [Fact]
         public void TestGetRealm()
         {
             var snippet = new GetRealmSamples();
-            Assert.Equal(fixture.RealmId,
+            Assert.Contains($"Realm returned: {fixture.RealmName}",
                 snippet.GetRealm(
                     fixture.ProjectId,
                     fixture.RegionId, 
@@ -85,11 +96,12 @@ namespace Gaming
         public void TestUpdateRealm()
         {
             var snippet = new UpdateRealmsSamples();
-            Assert.Equal(fixture.RealmId,
+            Assert.Contains(
+                $"Realm {fixture.RealmName} updated.",
                 snippet.UpdateRealm(
-                    fixture.ProjectId,
-                    fixture.RegionId,
-                    fixture.RealmId));
+                fixture.ProjectId,
+                fixture.RegionId,
+                fixture.RealmId));
         }
 
         [Fact]
@@ -100,7 +112,7 @@ namespace Gaming
                 snippet.ListRealms(
                     fixture.ProjectId,
                     fixture.RegionId),
-                el => Assert.NotNull(el));
+                e => Assert.NotNull(e));
         }
     }
 }

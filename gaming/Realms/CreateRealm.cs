@@ -27,17 +27,16 @@ namespace Gaming.Realms
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="realmId"></param>
-        /// <returns>Newly created realm name</returns>
         public string CreateRealm(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f",
+            string regionId = "us-central1",
             string realmId = "YOUR-REALM-ID")
         {
             // Initialize the client
             var client = RealmsServiceClient.Create();
 
             // Construct the request
-            string parent = $"projects/{projectId}/locations/{regionId}/realms/{realmId}";
+            string parent = $"projects/{projectId}/locations/{regionId}";
             string realmName = $"{parent}/realms/{realmId}";
             var realm = new Realm
             {
@@ -52,11 +51,19 @@ namespace Gaming.Realms
             };
 
             // Call the API
-            var created = client.CreateRealm(request);
+            try
+            {
+                var created = client.CreateRealm(request);
 
-            // Inspect the result
-            Console.WriteLine($"Realm created: {created.Name}");
-            return created.Name;
+                // Inspect the result
+                return $"Realm created for {realm.Name}. Operation Id {created.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateRealm error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Gaming.ScalingPolicies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">Id of the scaling policy</param>
-        /// <returns>Deleted scaling policy name</returns>
         public string DeleteScalingPolicy(
             string projectId = "YOUR-PROJECT-ID",
             string policyId = "YOUR-SCALING-POLICY-ID")
@@ -39,11 +38,19 @@ namespace Gaming.ScalingPolicies
             string policyName = $"{parent}/scalingPolicies/{policyId}";
 
             // Call the API
-            var deleted = client.DeleteScalingPolicy(policyName);
+            try
+            {
+                var deleted = client.DeleteScalingPolicy(policyName);
 
-            // Inspect the result
-            Console.WriteLine($"Scaling policy deleted: {deleted.Name}");
-            return deleted.Name;
+                // Inspect the result
+                return $"Scaling policy deleted: {policyName}.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"DeleteScalingPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

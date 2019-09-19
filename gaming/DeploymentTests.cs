@@ -17,111 +17,119 @@ using Gaming.Deployments;
 using GoogleCloudSamples;
 using Xunit;
 
-class DeploymentTestsFixture : IDisposable
+namespace Gaming.Tests
 {
-    private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private const string _regionId = "us-central1-f";
-    private const string _deploymentId = "test_deploymentId";
-
-    public DeploymentTestsFixture()
+    public class DeploymentTestsFixture : IDisposable
     {
-        ProjectId = _projectId;
-        RegionId = _regionId;
-        DeploymentId = _deploymentId + TestUtil.RandomName();
+        private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private const string _regionId = "us-central1-f";
+        private const string _deploymentId = "test_deploymentId";
 
-        // Setup
-        var createDeploymentUtils = new CreateDeploymentSamples();
-        DeploymentName = createDeploymentUtils.CreateDeployment(ProjectId, DeploymentId);
-
-        // Make sure deployment was created
-        Assert.NotNull(DeploymentName);
-    }
-
-    public void Dispose()
-    {
-        try
+        public DeploymentTestsFixture()
         {
-            var deleteDeploymentUtils = new DeploymentDeleteSamples();
-            deleteDeploymentUtils.DeleteDeployment(ProjectId, DeploymentId);
+            ProjectId = _projectId;
+            RegionId = _regionId;
+            DeploymentId = _deploymentId + TestUtil.RandomName();
+
+            // Setup
+            var createDeploymentUtils = new CreateDeploymentSamples();
+            DeploymentName = createDeploymentUtils.CreateDeployment(ProjectId, DeploymentId);
+
+            // Make sure deployment was created
+            Assert.NotNull(DeploymentName);
         }
-        catch (Exception e)
+
+        public void Dispose()
         {
-            Console.WriteLine($"Failed to delete Deployment {DeploymentName}");
-            Console.WriteLine(e);
+            try
+            {
+                var deleteDeploymentUtils = new DeploymentDeleteSamples();
+                deleteDeploymentUtils.DeleteDeployment(ProjectId, DeploymentId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to delete Deployment {DeploymentName}");
+                Console.WriteLine(e);
+            }
         }
+
+        public string ProjectId { get; private set; }
+        public string RegionId { get; private set; }
+        public string DeploymentId { get; private set; }
+
+        public string DeploymentName { get; private set; }
     }
 
-    public string ProjectId { get; private set; }
-    public string RegionId { get; private set; }
-    public string DeploymentId { get; private set; }
-
-    public string DeploymentName { get; private set; }
-}
-
-public class DeploymentTests : IClassFixture<DeploymentTests>
-{
-    private DeploymentTestsFixture fixture;
-
-    [Fact]
-    public void TestCreateDeployment()
+    public class DeploymentTests : IClassFixture<DeploymentTests>
     {
-        // Create API is implicitly used in text fixture setup
-        Assert.NotNull(fixture.DeploymentName);
-    }
+        private DeploymentTestsFixture fixture;
 
-    [Fact]
-    public void TestGetDeployment()
-    {
-        var snippet = new DeploymentGetSamples();
-        Assert.Equal(fixture.DeploymentName,
-            snippet.GetDeployment(fixture.ProjectId, fixture.DeploymentId));
-    }
+        public DeploymentTests(DeploymentTestsFixture fixture)
+        {
+            this.fixture = fixture;
+        }
 
-    [Fact]
-    public void TestGetDeploymentTarget()
-    {
-        var snippet = new DeploymentGetTargetSamples();
-        Assert.True(snippet.GetDeploymentTarget(fixture.ProjectId, fixture.DeploymentId) > 0);
-    }
+        [Fact]
+        public void TestCreateDeployment()
+        {
+            // Create API is implicitly used in text fixture setup
+            Assert.NotNull(fixture.DeploymentName);
+        }
 
-    [Fact]
-    public void TestListDeployments()
-    {
-        var snippet = new DeploymentListSamples();
-        Assert.Collection(
-            snippet.ListGameDeployments(fixture.ProjectId),
-            el => Assert.NotNull(el));
-    }
+        [Fact]
+        public void TestGetDeployment()
+        {
+            var snippet = new DeploymentGetSamples();
+            Assert.Equal(fixture.DeploymentName,
+                snippet.GetDeployment(fixture.ProjectId, fixture.DeploymentId));
+        }
 
-    [Fact]
-    public void TestSetRolloutTarget()
-    {
-        var snippet = new DeploymentSetRolloutTargetSamples();
-        Assert.NotNull(
-            snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
-    }
+        [Fact]
+        public void TestGetDeploymentTarget()
+        {
+            var snippet = new DeploymentGetTargetSamples();
+            Assert.True(snippet.GetDeploymentTarget(fixture.ProjectId, fixture.DeploymentId) > 0);
+        }
 
-    [Fact]
-    public void TestStartRollout()
-    {
-        var snippet = new DeploymentSetRolloutTargetSamples();
-        Assert.NotNull(
-            snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
-    }
+        [Fact]
+        public void TestListDeployments()
+        {
+            var snippet = new DeploymentListSamples();
+            Assert.Collection(
+                snippet.ListGameDeployments(fixture.ProjectId),
+                el => Assert.NotNull(el));
+        }
 
-    [Fact]
-    public void TestUpdateDeployment()
-    {
-        var snippet = new UpdateDeploymentSamples();
-        Assert.NotNull(
-            snippet.UpdateDeployment(fixture.ProjectId, fixture.DeploymentId));
-    }
+        [Fact]
+        public void TestSetRolloutTarget()
+        {
+            var snippet = new DeploymentSetRolloutTargetSamples();
+            Assert.NotNull(
+                snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
+        }
 
-    [Fact]
-    public void TestCommitRollout()
-    {
-        var snippet = new DeploymentCommitSamples();
-        Assert.NotNull(
-            snippet.CommitRollout(fixture.ProjectId, fixture.RegionId, fixture.DeploymentId));
+        [Fact]
+        public void TestStartRollout()
+        {
+            var snippet = new DeploymentSetRolloutTargetSamples();
+            Assert.NotNull(
+                snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
+        }
+
+        [Fact]
+        public void TestUpdateDeployment()
+        {
+            var snippet = new UpdateDeploymentSamples();
+            Assert.NotNull(
+                snippet.UpdateDeployment(fixture.ProjectId, fixture.DeploymentId));
+        }
+
+        [Fact]
+        public void TestCommitRollout()
+        {
+            var snippet = new DeploymentCommitSamples();
+            Assert.NotNull(
+                snippet.CommitRollout(fixture.ProjectId, fixture.RegionId, fixture.DeploymentId));
+        }
     }
 }

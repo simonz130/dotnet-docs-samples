@@ -31,13 +31,12 @@ namespace Gaming.Clusters
         /// <param name="realmId"></param>
         /// <param name="clusterId">The id of the game server cluster</param>
         /// <param name="gkeName">The name of Google Kubernetes Engine cluster</param>
-        /// <returns>Game server cluster name</returns>
         public string CreateGameServerCluster(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f",
+            string regionId = "us-central1",
             string realmId = "YOUR-REALM-ID",
             string clusterId = "YOUR-GAME-SERVER-CLUSTER-ID",
-            string gkeName = "projects/your-project-id/locations/us-central1/clusters/test")
+            string gkeName = "projects/YOUR-PROJECT-ID/locations/us-central1/clusters/test")
         {
             // Initialize the client
             var client = GameServerClustersServiceClient.Create();
@@ -62,11 +61,19 @@ namespace Gaming.Clusters
             };
 
             // Call the API
-            var created = client.CreateGameServerCluster(request);
+            try
+            {
+                var created = client.CreateGameServerCluster(request);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster created: {created.Name}");
-            return created.Name;
+                // Inspect the result
+                return $"Game server cluster created: {created.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateGameServerCluster error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }
