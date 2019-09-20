@@ -26,7 +26,6 @@ namespace Gaming.ScalingPolicies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">Id of the scaling policy</param>
-        /// <returns>Gets scaling policy name</returns>
         public string GetScalingPolicy(
             string projectId = "YOUR-PROJECT-ID",
             string policyId = "YOUR-SCALING-POLICY-ID")
@@ -39,11 +38,19 @@ namespace Gaming.ScalingPolicies
             string policyName = $"{parent}/scalingPolicies/{policyId}";
 
             // Call the API
-            var scalingPolicy = client.GetScalingPolicy(policyName);
+             try
+            {
+                var scalingPolicy = client.GetScalingPolicy(policyName);
 
-            // Inspect the result
-            Console.WriteLine($"Scaling policy found: {scalingPolicy.Name}");
-            return scalingPolicy.Name;
+                // Inspect the result
+                return $"Scaling policy found: {scalingPolicy.Name}.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"GetScalingPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

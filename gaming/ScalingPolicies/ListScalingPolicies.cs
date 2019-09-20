@@ -27,9 +27,7 @@ namespace Gaming.ScalingPolicies
         /// List scaling policies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
-        /// <returns>List all scaling policies for project</returns>
-        public List<string> ListScalingPolicies(
-            string projectId = "YOUR-PROJECT-ID")
+        public List<string> ListScalingPolicies(string projectId = "YOUR-PROJECT-ID")
         {
             // Initialize the client
             var client = ScalingPoliciesServiceClient.Create();
@@ -51,10 +49,10 @@ namespace Gaming.ScalingPolicies
                     currentPage = response.ReadPage(pageSize: 10);
 
                     // Read the result in a given page
-                    foreach (var realm in currentPage)
+                    foreach (var policy in currentPage)
                     {
-                        Console.WriteLine($"Scaling policy found: {realm.Name}");
-                        result.Add(realm.Name);
+                        Console.WriteLine($"Scaling policy found: {policy.Name}");
+                        result.Add(policy.Name);
                     }
                     hasMore = currentPage != null; 
                 };

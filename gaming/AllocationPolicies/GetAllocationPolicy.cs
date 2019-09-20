@@ -29,7 +29,7 @@ namespace Gaming.AllocationPolicies
         /// <returns>Allocated Policy Name</returns>
         public string GetAllocationPolicy(
             string projectId = "YOUR-PROJECT-ID",
-            string policyId = "372819127")
+            string policyId = "YOUR-POLICY-ID")
         {
             // Initialize the client
             AllocationPoliciesServiceClient client = AllocationPoliciesServiceClient.Create();
@@ -44,11 +44,19 @@ namespace Gaming.AllocationPolicies
             };
 
             // Call the API
-            var result = client.GetAllocationPolicy(request);
+            try
+            {
+                var result = client.GetAllocationPolicy(request);
 
-            // Inspect the result
-            Console.WriteLine($"Allocation Policy returned: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Allocation Policy found: {result.Name}.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"GetAllocationPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

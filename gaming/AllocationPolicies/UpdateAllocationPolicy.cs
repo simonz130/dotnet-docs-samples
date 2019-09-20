@@ -26,10 +26,9 @@ namespace Gaming.AllocationPolicies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">The id of the game policy</param>
-        /// <returns>Allocated Policy Name</returns>
         public string UpdateAllocationPolicy(
             string projectId = "YOUR-PROJECT-ID",
-            string policyId = "372819127")
+            string policyId = "YOUR-POLICY-ID")
         {
             // Initialize the client
             AllocationPoliciesServiceClient client = AllocationPoliciesServiceClient.Create();
@@ -44,11 +43,19 @@ namespace Gaming.AllocationPolicies
             };
 
             // Call the API
-            var result = client.UpdateAllocationPolicy(request);
+            try
+            {
+                var result = client.UpdateAllocationPolicy(request);
 
-            // Inspect the result
-            Console.WriteLine($"Allocation Policy updated: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Allocation Policy updated: {policyName}. Operation Id: {result.Name}.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UpdateAllocationPolicy error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

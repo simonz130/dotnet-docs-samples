@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax;
 using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.AllocationPolicies
@@ -27,10 +28,9 @@ namespace Gaming.AllocationPolicies
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="policyId">The id of the game policy</param>
-        /// <returns>Allocated Policy Name</returns>
         public List<string> ListAllocationPolicy(
             string projectId = "YOUR-PROJECT-ID",
-            string policyId = "372819127")
+            string policyId = "YOUR-ALLOCATION-POLICY")
         {
             // Initialize the client
             AllocationPoliciesServiceClient client = AllocationPoliciesServiceClient.Create();
@@ -43,17 +43,35 @@ namespace Gaming.AllocationPolicies
             };
 
             // Call the API
-            var result = client.ListAllocationPolicies(request);
-
-            // Inspect the result
-            var res = new List<string>();
-            foreach (var policy in result)
+            try
             {
-                Console.WriteLine($"Allocation Policy returned: {policy.Name}");
-                res.Add(policy.Name);
-            }
+                var response = client.ListAllocationPolicies(parent);
 
-            return res;
+                // Inspect the result
+                List<string> result = new List<string>();
+                bool hasMore = true;
+                Page<AllocationPolicy> currentPage;
+                while (hasMore)
+                {
+                    currentPage = response.ReadPage(pageSize: 10);
+
+                    // Read the result in a given page
+                    foreach (var policy in currentPage)
+                    {
+                        Console.WriteLine($"Allocation policy found: {policy.Name}");
+                        result.Add(policy.Name);
+                    }
+                    hasMore = currentPage != null; 
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ListAllocationPolicies error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }
