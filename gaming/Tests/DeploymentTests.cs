@@ -22,21 +22,25 @@ namespace Gaming.Tests
     public class DeploymentTestsFixture : IDisposable
     {
         private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private const string _regionId = "us-central1-f";
-        private const string _deploymentId = "test_deploymentId";
+        private const string _regionId = "us-central1";
+        private const string _deploymentId = "test_deployment_";
 
         public DeploymentTestsFixture()
         {
             ProjectId = _projectId;
+            Assert.False(string.IsNullOrEmpty(ProjectId));
+
             RegionId = _regionId;
             DeploymentId = _deploymentId + TestUtil.RandomName();
 
+            string parent = $"projects/{ProjectId}/locations/global";
+            DeploymentName = $"{parent}/gameServerDeployments/{DeploymentId}";
+
             // Setup
             var createDeploymentUtils = new CreateDeploymentSamples();
-            DeploymentName = createDeploymentUtils.CreateDeployment(ProjectId, DeploymentId);
-
-            // Make sure deployment was created
-            Assert.NotNull(DeploymentName);
+            Assert.Contains(
+                $"Game server deployment created for {DeploymentId}.",
+                createDeploymentUtils.CreateDeployment(ProjectId, DeploymentId));
         }
 
         public void Dispose()
@@ -44,11 +48,13 @@ namespace Gaming.Tests
             try
             {
                 var deleteDeploymentUtils = new DeploymentDeleteSamples();
-                deleteDeploymentUtils.DeleteDeployment(ProjectId, DeploymentId);
+                Assert.Contains(
+                    $"Game server deployment {DeploymentId} deleted.",
+                    deleteDeploymentUtils.DeleteDeployment(ProjectId, DeploymentId));
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failed to delete Deployment {DeploymentName}");
+                Console.WriteLine($"Failed to delete Deployment {DeploymentId}");
                 Console.WriteLine(e);
             }
         }
@@ -56,13 +62,12 @@ namespace Gaming.Tests
         public string ProjectId { get; private set; }
         public string RegionId { get; private set; }
         public string DeploymentId { get; private set; }
-
         public string DeploymentName { get; private set; }
     }
 
     public class DeploymentTests : IClassFixture<DeploymentTests>
     {
-        private DeploymentTestsFixture fixture;
+        private readonly DeploymentTestsFixture fixture;
 
         public DeploymentTests(DeploymentTestsFixture fixture)
         {
@@ -73,14 +78,15 @@ namespace Gaming.Tests
         public void TestCreateDeployment()
         {
             // Create API is implicitly used in text fixture setup
-            Assert.NotNull(fixture.DeploymentName);
+            Assert.NotNull(fixture.DeploymentId);
         }
 
         [Fact]
         public void TestGetDeployment()
         {
             var snippet = new DeploymentGetSamples();
-            Assert.Equal(fixture.DeploymentName,
+            Assert.Contains(
+                $"Game server deployment found: {fixture.DeploymentName}" ,
                 snippet.GetDeployment(fixture.ProjectId, fixture.DeploymentId));
         }
 
@@ -88,7 +94,9 @@ namespace Gaming.Tests
         public void TestGetDeploymentTarget()
         {
             var snippet = new DeploymentGetTargetSamples();
-            Assert.True(snippet.GetDeploymentTarget(fixture.ProjectId, fixture.DeploymentId) > 0);
+            Assert.Contains(
+                $"Found target for {fixture.DeploymentName}",
+                snippet.GetDeploymentTarget(fixture.ProjectId, fixture.DeploymentId));
         }
 
         [Fact]
@@ -104,7 +112,8 @@ namespace Gaming.Tests
         public void TestSetRolloutTarget()
         {
             var snippet = new DeploymentSetRolloutTargetSamples();
-            Assert.NotNull(
+            Assert.Contains(
+                $"Rollout target set for {fixture.DeploymentId}.",
                 snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
         }
 
@@ -112,7 +121,8 @@ namespace Gaming.Tests
         public void TestStartRollout()
         {
             var snippet = new DeploymentSetRolloutTargetSamples();
-            Assert.NotNull(
+            Assert.Contains(
+                $"Deployment rollout started for {fixture.DeploymentId}.",
                 snippet.SetRolloutTargetTarget(fixture.ProjectId, fixture.DeploymentId));
         }
 
@@ -120,7 +130,8 @@ namespace Gaming.Tests
         public void TestUpdateDeployment()
         {
             var snippet = new UpdateDeploymentSamples();
-            Assert.NotNull(
+            Assert.Contains(
+                $"Game server deployment updated for deployment {fixture.DeploymentId}.",
                 snippet.UpdateDeployment(fixture.ProjectId, fixture.DeploymentId));
         }
 
@@ -128,7 +139,8 @@ namespace Gaming.Tests
         public void TestCommitRollout()
         {
             var snippet = new DeploymentCommitSamples();
-            Assert.NotNull(
+            Assert.Contains(
+                $"Committed rollout for deployment: {fixture.DeploymentId}.",
                 snippet.CommitRollout(fixture.ProjectId, fixture.RegionId, fixture.DeploymentId));
         }
     }

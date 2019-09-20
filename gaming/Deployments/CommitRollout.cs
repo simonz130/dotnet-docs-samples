@@ -27,10 +27,9 @@ namespace Gaming.Deployments
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Deployment name</returns>
         public string CommitRollout(
             string projectId = "YOUR-PROJECT-ID",
-            string regionId = "us-central1-f",
+            string regionId = "us-central1",
             string deploymentId = "YOUR-DEPLOYMENT-ID")
         {
             // Initialize the client
@@ -40,11 +39,19 @@ namespace Gaming.Deployments
             string deploymentName = $"projects/{projectId}/locations/{regionId}/gameServerDeployments/{deploymentId}";
 
             // Call the API
-            var result = client.CommitRollout(deploymentName);
+            try
+            {
+                var result = client.CommitRollout(deploymentName);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster created: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Committed rollout for deployment: {deploymentId}. Operation Id: {result.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CommitRollout error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

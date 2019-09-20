@@ -27,7 +27,6 @@ namespace Gaming.Deployments
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Game server deployment name</returns>
         public string CreateDeployment(
             string projectId = "YOUR-PROJECT-ID",
             string deploymentId = "YOUR-DEPLOYMENT-ID")
@@ -79,11 +78,19 @@ namespace Gaming.Deployments
             };
 
             // Call the API
-            var created = client.CreateGameServerDeployment(request);
+            try
+            {
+                var created = client.CreateGameServerDeployment(request);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster created: {created.Name}");
-            return created.Name;
+                // Inspect the result
+                return $"Game server deployment created for {deploymentId}. OperationId: {created.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CreateGameServerDeployment error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

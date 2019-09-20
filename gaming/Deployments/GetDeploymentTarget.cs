@@ -26,8 +26,7 @@ namespace Gaming.Deployments
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Number of clusters in deployment target</returns>
-        public int GetDeploymentTarget(
+        public string GetDeploymentTarget(
             string projectId = "YOUR-PROJECT-ID",
             string deploymentId = "YOUR-DEPLOYMENT-ID")
         {
@@ -39,11 +38,19 @@ namespace Gaming.Deployments
             string deploymentName = $"{parent}/gameServerDeployments/{deploymentId}";
 
             // Call the API
-            var result = client.GetDeploymentTarget(deploymentName);
+            try
+            {
+                var result = client.GetDeploymentTarget(deploymentName);
 
-            // Inspect the result
-            Console.WriteLine($"Found target with {result.Clusters.Count} clusters.");
-            return result.Clusters.Count;
+                // Inspect the result
+                return $"Found target for {deploymentName} with {result.Clusters.Count} clusters.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"GetDeploymentTarget error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

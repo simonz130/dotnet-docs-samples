@@ -26,7 +26,6 @@ namespace Gaming.Deployments
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Rollout name</returns>
         public string SetRolloutTargetTarget(
             string projectId = "YOUR-PROJECT-ID",
             string deploymentId = "YOUR-DEPLOYMENT-ID")
@@ -48,11 +47,19 @@ namespace Gaming.Deployments
             };
 
             // Call the API
-            var result = client.SetRolloutTarget(request);
+            try
+            {
+                var result = client.SetRolloutTarget(request);
 
-            // Inspect the result
-            Console.WriteLine($"Rollout target set: {result.Name}.");
-            return result.Name;
+                // Inspect the result
+                return $"Rollout target set for {deploymentId}. Operation Id: {result.Name}.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"SetRolloutTarget error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

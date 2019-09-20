@@ -67,11 +67,6 @@ namespace Gaming.Tests
     {
         private readonly AllocationPoliciesTestsFixture fixture;
 
-        private static string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private const string _policyId = "12345";
-        private static string _policyName = 
-            $"projects/{_projectId}/locations/global/allocationPolicies/{_policyId}";
-
         public AllocationPoliciesTest(AllocationPoliciesTestsFixture fixture)
         {
             this.fixture = fixture;
@@ -81,24 +76,23 @@ namespace Gaming.Tests
         public void TestCreateAllocationPolicy()
         {
             var snippet = new CreateAllocationPolicySamples();
-            Assert.Equal(_policyName,
-                snippet.CreateAllocationPolicy(_projectId, _policyId));
+            Assert.NotNull(fixture.PolicyName);
         }
 
         [Fact]
         public void TestGetAllocationPolicy()
         {
             var snippet = new GetAllocationPolicySamples();
-            Assert.Equal(_policyName,
-                snippet.GetAllocationPolicy(_projectId, _policyId));
+            Assert.Contains($"Allocation Policy found: {fixture.PolicyName}.",
+                snippet.GetAllocationPolicy(fixture.ProjectId, fixture.PolicyId));
         }
 
         [Fact]
         public void TestUpdateAllocationPolicy()
         {
             var snippet = new UpdateAllocationPolicySamples();
-            Assert.Equal(_policyName,
-                snippet.UpdateAllocationPolicy(_projectId, _policyId));
+            Assert.Contains($"Allocation Policy updated: {fixture.PolicyName}",
+                snippet.UpdateAllocationPolicy(fixture.ProjectId, fixture.PolicyId));
         }
 
         [Fact]
@@ -106,7 +100,7 @@ namespace Gaming.Tests
         {
             var snippet = new ListAllocationPolicySamples();
             Assert.Collection(
-                snippet.ListAllocationPolicy(_projectId, _policyId),
+                snippet.ListAllocationPolicy(fixture.ProjectId, fixture.PolicyId),
                 el => Assert.NotNull(el));
         }
     }

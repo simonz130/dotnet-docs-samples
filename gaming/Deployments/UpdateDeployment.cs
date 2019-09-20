@@ -46,13 +46,20 @@ namespace Gaming.Deployments
             // Initialize the client
             var client = GameServerDeploymentsServiceClient.Create();
 
-
             // Call the API
-            var updated = client.UpdateGameServerDeployment(deployment, fieldMask);
+            try
+            {
+                var updated = client.UpdateGameServerDeployment(deployment, fieldMask);
 
-            // Inspect the result
-            Console.WriteLine($"Game server deployment updated: {updated.Name}");
-            return updated.Name;
+                // Inspect the result
+                return $"Game server deployment updated for deployment {deploymentId}. Operation Id: {updated.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UpdateGameServerDeployment error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

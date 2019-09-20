@@ -27,7 +27,6 @@ namespace Gaming.Deployments
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="regionId">Region in which the cluster will be created</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Deployment name</returns>
         public string RevertRollout(
             string projectId = "YOUR-PROJECT-ID",
             string regionId = "us-central1-f",
@@ -40,11 +39,19 @@ namespace Gaming.Deployments
             string deploymentName = $"projects/{projectId}/locations/{regionId}/gameServerDeployments/{deploymentId}";
 
             // Call the API
-            var result = client.RevertRollout(deploymentName);
+            try
+            {
+                var result = client.RevertRollout(deploymentName);
 
-            // Inspect the result
-            Console.WriteLine($"Rollout reverted: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Rollout reverted for {deploymentId}. Operation ID: {result.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"RevertRollout error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

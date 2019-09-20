@@ -78,11 +78,19 @@ namespace Gaming.Deployments
             };
 
             // Call the API
-            var result = client.StartRollout(startRolloutRequest);
+            try
+            {
+                var result = client.StartRollout(startRolloutRequest);
 
-            // Inspect the result
-            Console.WriteLine($"Game server cluster created: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Deployment rollout started for {deploymentId}. Operation Id: {result.Name}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"StartRollout error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

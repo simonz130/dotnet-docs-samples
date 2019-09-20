@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax;
 using Google.Cloud.Gaming.V1Alpha;
 
 namespace Gaming.Deployments
@@ -38,17 +39,35 @@ namespace Gaming.Deployments
             string parent = $"projects/{projectId}/locations/global";
 
             // Call the API
-            var gameDeployments = client.ListGameServerDeployments(parent);
-
-            // Inspect the result
-            var res = new List<string>();
-            foreach (var gameDeployment in gameDeployments)
+            try
             {
-                Console.WriteLine($"Game server deployment found: {gameDeployment.Name}");
-                res.Add(gameDeployment.Name);
-            }
+                var gameDeployments = client.ListGameServerDeployments(parent);
 
-            return res;
+                // Inspect the result
+                List<string> result = new List<string>();
+                bool hasMore = true;
+                Page<GameServerDeployment> currentPage;
+                while (hasMore)
+                {
+                    currentPage = gameDeployments.ReadPage(pageSize: 10);
+
+                    // Read the result in a given page
+                    foreach (var gameDeployment in currentPage)
+                    {
+                        Console.WriteLine($"Game server deployment found: {gameDeployment.Name}");
+                        result.Add(gameDeployment.Name);
+                    }
+                    hasMore = currentPage != null; 
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ListGameServerDeployments error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Gaming.Deployments
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project Id</param>
         /// <param name="deploymentId">Deployment Id</param>
-        /// <returns>Deployment name</returns>
         public string DeleteDeployment(
             string projectId = "YOUR-PROJECT-ID",
             string deploymentId = "YOUR-DEPLOYMENT-ID")
@@ -39,11 +38,19 @@ namespace Gaming.Deployments
             string deploymentName = $"{parent}/gameServerDeployments/{deploymentId}";
 
             // Call the API
-            var result = client.DeleteGameServerDeployment(deploymentName);
+            try
+            {
+                var result = client.DeleteGameServerDeployment(deploymentName);
 
-            // Inspect the result
-            Console.WriteLine($"Game server deployment deleted: {result.Name}");
-            return result.Name;
+                // Inspect the result
+                return $"Game server deployment {deploymentId} deleted.";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"DeleteGameServerDeployment error:");
+                Console.WriteLine($"{e.Message}");
+                throw;
+            }
         }
     }
 }
